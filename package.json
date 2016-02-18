@@ -1,0 +1,15 @@
+{
+  "name": "freebox-share",
+  "version": "0.0.1",
+  "description": "draft-to-dev freebox api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kizdolf",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "request": "~2.69.0",
+    "crypto": "0.0.3"
+  }
+}
