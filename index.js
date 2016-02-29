@@ -7,6 +7,7 @@
 'use strict';
 var request = require('request');
 var crypto = require('crypto');
+var EventEmitter = require('events').EventEmitter;
 
 var box = {
     ip: '',
@@ -135,10 +136,29 @@ var lsFiles = (path, cb)=>{
     });
 };
 
+var streamFile = (path, cb)=>{
+    var stream = new EventEmitter();
+    var endpoint = box.url + 'dl/' + path;
+    var options = {
+        url : endpoint,
+        headers : { 'X-Fbx-App-Auth' : box.token },
+        method : 'GET',
+        encode: 'utf-8'
+	};
+    return request(options)
+    .on('data', (chunk)=>{
+        stream.emit('data', chunk);
+    })
+    .on('end', (end)=>{
+        stream.emit('end', end);
+    });
+};
+
 module.exports = {
     getBox: getBox,
     authorize: authorize,
     isAuthorized: isAuthorized,
     login: login,
-    lsFiles: lsFiles
+    lsFiles: lsFiles,
+    streamFile: streamFile
 };
