@@ -16,9 +16,9 @@ device_name string
 freebox.getBox(id, name, version, device, ip, function(response){/* */});
  
 ```
+
 >Then register it:
-```javascript
-
-freebox.authorize(function(){/* */});
-
 ```
+    freebox.authorize(function(){/* */});
+``` 
+ **you will have to accept the app on the LCD screen at this point!**
