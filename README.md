@@ -5,7 +5,8 @@ This is a draft. login/register mechanisms are working, but use with very much c
 
 ```var freebox = require('./index);```
 ## Register your app:
->First declare your app
+_First declare your app_
+
 ```javascript
 /*
 id: A unique app_id string
@@ -16,7 +17,8 @@ device_name string
 freebox.getBox(id, name, version, device, ip, function(response){/* */});
 ```
 
->Then register it:
+_Then register it:_
+
 ```javascript
 freebox.authorize(function(){/* */});
 ``` 
