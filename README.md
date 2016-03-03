@@ -14,11 +14,10 @@ version app version
 device_name string
 */
 freebox.getBox(id, name, version, device, ip, function(response){/* */});
- 
 ```
 
 >Then register it:
-```
-    freebox.authorize(function(){/* */});
+```javascript
+freebox.authorize(function(){/* */});
 ``` 
  **you will have to accept the app on the LCD screen at this point!**
