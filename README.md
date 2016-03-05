@@ -1,58 +1,50 @@
 # freebox-node
 [dev]interact with a freebox the easy way.
 
-first draft of init/register/login mechanisms.
+This is a draft. login/register mechanisms are working, but use with very much caution. 
+
+```javascript
+var freebox = require('./index');
+```
+## Register your app:
+_First declare your app_
+
+```javascript
+/*
+id: A unique app_id string
+name: A descriptive application name (will be displayed on lcd)
+version app version
+device_name string
+*/
+freebox.getBox(id, name, version, device, ip, function(response){/* */});
 ```
 
-var box = require('my-freebox')
+_Then register it:_
 
-box() =>{
-    params: {
-        url: {
-            mandatory, 
-            url of the freebox you wish to communicate with. 
-            protcole + (ip or host) + port,
-            eg: http://10.21.25.54.12:6574
-        },
-        app_token: {
-            optional,
-            app_token of a registered app. 
-            if not provided you'll just be able to use the register method.
-        }
-    },
-    role: {
-        initialisation of the module. Check if the freebox is avaible, connect to it a first time, retrieve needed informations, create the first session if app_token as been passed. If not just test and check the freebox.
-    },
-    return: {
-        none,
-        can trigger a 'error' event if :
-            -url passed is wrong,
-            -app_token do not permit the authentification,
-            -the app do not have a granted access.
-    }
-}
+```javascript
+freebox.authorize(function(){/* */});
+``` 
+ **you will have to accept the app on the LCD screen at this point!**
 
-register()=>{
-    params: {
-        app_id [string]: A unique app_id string,
-        app_name [string]: A descriptive application name (will be displayed on lcd),
-        app_version [string]: app version,
-        device_name [string]: The name of the device on which the app will be used
-    },
-    role: {
-        try to authorize the application on the freebox.
-        You'll have to grant the app directly on the freebox screen.
-    },
-    retrun: {
-        A promise.
-        if success the 'then' will be as:{
-            {
-              "app_token": "xxxxxxxxxxxxxxxx...",
-              "track_id": 42
-            }
-        }
-        if not the catch will inform about the error.
-    }
+_finally you can login_ 
+> Note: if your app is already registered and you already have the app_token you Should skip the register part. 
 
-}
+```javascript
+freebox.login(app_token, function(){/* */});
+``` 
+# Methods: 
+
+```javascript
+//list files for a given path.
+freebox.lsFiles(path, function(files){/* */})
+
+//streamFile directly from freebox
+freebox.streamFile(b64Path)
+.on('data', (data)=>{/* */})
+.on('end', (end)=>{/* */});
 ```
+
+##TODO
+
+ * add the app_token in getBox, for app already registered.
+ * transform the getBow into constructor.
