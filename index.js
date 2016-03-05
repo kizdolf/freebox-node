@@ -136,22 +136,38 @@ var lsFiles = (path, cb)=>{
     });
 };
 
-var streamFile = (path, cb)=>{
-    var stream = new EventEmitter();
-    var endpoint = box.url + 'dl/' + path;
+var b64lsFiles = (path, cb)=>{
+    var endpoint = box.url + 'fs/ls/' + path;
     var options = {
         url : endpoint,
         headers : { 'X-Fbx-App-Auth' : box.token },
         method : 'GET',
         encode: 'utf-8'
-	};
-    return request(options)
-    .on('data', (chunk)=>{
-        stream.emit('data', chunk);
-    })
-    .on('end', (end)=>{
-        stream.emit('end', end);
+    };
+    request(options, (err, res, body)=>{
+        if(!err){
+            body = JSON.parse(body);
+            cb(body.result);
+        }
     });
+};
+
+var streamFile = (path)=>{
+    var evt     = new EventEmitter(),
+    endpoint    = box.url + 'dl/' + path,
+    options     = {
+        url : endpoint,
+        headers : { 'X-Fbx-App-Auth' : box.token },
+        method : 'GET',
+        encode: 'utf-8'
+    };
+    return (
+        request(options).on('data', (chunk)=>{
+            evt.emit('data', chunk);
+        }).on('end', (end)=>{
+            evt.emit('end', end);
+        })
+    );
 };
 
 module.exports = {
@@ -160,5 +176,6 @@ module.exports = {
     isAuthorized: isAuthorized,
     login: login,
     lsFiles: lsFiles,
-    streamFile: streamFile
+    streamFile: streamFile,
+    b64lsFiles: b64lsFiles
 };
