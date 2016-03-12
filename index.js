@@ -6,6 +6,12 @@
 
 'use strict';
 var request = require('request');
+var stream = require('stream');
+var child_process   = require('child_process');
+var uuid = require('node-uuid');
+var fs = require('fs');
+var Transcoder  = require('stream-transcoder');
+var avconv = require('avconv');
 var crypto = require('crypto');
 var EventEmitter = require('events').EventEmitter;
 
@@ -152,17 +158,30 @@ var b64lsFiles = (path, cb)=>{
     });
 };
 
-var streamFile = (path)=>{
+//avconv -y -r 30 -f image2pipe -vcodec ppm -i - -b 65536K GitStream.mp4
+
+var streamFile = (path, streamPath, ext)=>{
+    var spawn = require('child_process').spawn;
     var evt     = new EventEmitter(),
     endpoint    = box.url + 'dl/' + path,
     options     = {
         url : endpoint,
         headers : { 'X-Fbx-App-Auth' : box.token },
         method : 'GET',
-        encode: 'utf-8'
+        // encode: 'utf-8'
     };
-    return (
-        request(options).on('data', (chunk)=>{
+    if(streamPath && ext){
+        var destStream = fs.createWriteStream(streamPath);
+
+        var args = ['-i', 'pipe:0', '-f', 'webm', 'pipe:1'], // Set args, define i/o streams
+        avconv = spawn('avconv', args); // Spawn avconv process
+        request(options).pipe(avconv.stdin);
+        avconv.stdout.pipe(destStream);
+
+    }
+    return(
+        request(options)
+        .on('data', (chunk)=>{
             evt.emit('data', chunk);
         }).on('end', (end)=>{
             evt.emit('end', end);

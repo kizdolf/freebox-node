@@ -9,7 +9,10 @@
   "author": "kizdolf",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "avconv": "^3.0.2",
+    "crypto": "0.0.3",
+    "node-uuid": "^1.4.7",
     "request": "~2.69.0",
-    "crypto": "0.0.3"
+    "stream-transcoder": "0.0.5"
   }
 }
