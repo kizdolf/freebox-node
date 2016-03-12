@@ -5,15 +5,10 @@
 */
 
 'use strict';
-var request = require('request');
-var stream = require('stream');
-var child_process   = require('child_process');
-var uuid = require('node-uuid');
-var fs = require('fs');
-var Transcoder  = require('stream-transcoder');
-var avconv = require('avconv');
-var crypto = require('crypto');
-var EventEmitter = require('events').EventEmitter;
+var request      = require('request'),
+    fs           = require('fs'),
+    crypto       = require('crypto'),
+    EventEmitter = require('events').EventEmitter;
 
 var box = {
     ip: '',
@@ -158,26 +153,21 @@ var b64lsFiles = (path, cb)=>{
     });
 };
 
-//avconv -y -r 30 -f image2pipe -vcodec ppm -i - -b 65536K GitStream.mp4
-
 var streamFile = (path, streamPath, ext)=>{
-    var spawn = require('child_process').spawn;
-    var evt     = new EventEmitter(),
-    endpoint    = box.url + 'dl/' + path,
-    options     = {
+    var spawn = require('child_process').spaw,
+    evt       = new EventEmitter(),
+    endpoint  = box.url + 'dl/' + path,
+    options   = {
         url : endpoint,
         headers : { 'X-Fbx-App-Auth' : box.token },
         method : 'GET',
-        // encode: 'utf-8'
+        encode: 'utf-8'
     };
     if(streamPath && ext){
-        var destStream = fs.createWriteStream(streamPath);
-
         var args = ['-i', 'pipe:0', '-f', 'webm', 'pipe:1'], // Set args, define i/o streams
-        avconv = spawn('avconv', args); // Spawn avconv process
-        request(options).pipe(avconv.stdin);
-        avconv.stdout.pipe(destStream);
-
+        avconv   = spawn('avconv', args); // Spawn avconv process
+        request(options).pipe(avconv.stdin); // pipe file to avconv
+        avconv.stdout.pipe(fs.createWriteStream(streamPath)); // pipe transcoded chunks to out file.
     }
     return(
         request(options)
@@ -190,11 +180,11 @@ var streamFile = (path, streamPath, ext)=>{
 };
 
 module.exports = {
-    getBox: getBox,
-    authorize: authorize,
+    getBox:       getBox,
+    authorize:    authorize,
     isAuthorized: isAuthorized,
-    login: login,
-    lsFiles: lsFiles,
-    streamFile: streamFile,
-    b64lsFiles: b64lsFiles
+    login:        login,
+    lsFiles:      lsFiles,
+    streamFile:   streamFile,
+    b64lsFiles:   b64lsFiles
 };
