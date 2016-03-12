@@ -154,7 +154,7 @@ var b64lsFiles = (path, cb)=>{
 };
 
 var streamFile = (path, streamPath, ext)=>{
-    var spawn = require('child_process').spaw,
+    var spawn = require('child_process').spawn,
     evt       = new EventEmitter(),
     endpoint  = box.url + 'dl/' + path,
     options   = {
@@ -166,7 +166,11 @@ var streamFile = (path, streamPath, ext)=>{
     if(streamPath && ext){
         var args = ['-i', 'pipe:0', '-f', 'webm', 'pipe:1'], // Set args, define i/o streams
         avconv   = spawn('avconv', args); // Spawn avconv process
-        request(options).pipe(avconv.stdin); // pipe file to avconv
+        request(options).pipe(avconv.stdin) // pipe file to avconv
+        .on('error', (err)=>{
+            console.log('err');
+            console.log(err);
+        });
         avconv.stdout.pipe(fs.createWriteStream(streamPath)); // pipe transcoded chunks to out file.
     }
     return(
